@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed = 7f;
-
+    [SerializeField] private float _turnSpeed = 10f;
 
     private bool _isMoving;
 
@@ -16,27 +16,11 @@ public class PlayerController : MonoBehaviour
 
     private void MovementController()
     {
-        Vector3 moveInput = Vector3.zero;
+        Vector3 moveInput = GameInput.Instance.GetMovementInputNormalized();
 
-        if(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-        {
-            moveInput.z = 1;
-        }
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-        {
-            moveInput.z = -1;
-        }
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-        {
-            moveInput.x = -1;
-        }
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-        {
-            moveInput.x = 1;
-        }
- 
-        transform.position += moveInput.normalized * _moveSpeed * Time.deltaTime;
-        transform.forward = Vector3.Slerp(transform.forward, moveInput, Time.deltaTime * 10f);
+
+        transform.position += moveInput * _moveSpeed * Time.deltaTime;
+        transform.forward = Vector3.Slerp(transform.forward, moveInput, _turnSpeed * Time.deltaTime);
 
         _isMoving = moveInput != Vector3.zero;
     }
