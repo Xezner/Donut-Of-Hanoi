@@ -5,14 +5,23 @@ using Unity.VisualScripting;
 using UnityEngine;
 public class DragController : MonoBehaviour
 {
+    [Header("Camera")]
     [SerializeField] private Camera _camera;
+
+    [Header("RigidBody")]
     [SerializeField] private Rigidbody _rigidbody;
-    [SerializeField] private float _lerpDuration = 0.2f;
-    [SerializeField] private float _elapsedTime = 0f;
-    private float _bufferTime = 0f;
+
+    [Header("Position Values")]
+    [SerializeField] private float _maxVerticalHeight = 3.5f;
+
+    [Header("Animation Values")]
+    [SerializeField] private float _animationDuration = 0.2f;
+    [SerializeField] private float _animationElapsedTime = 0f;
+
+    [SerializeField] private float _bufferDuration = 0.2f;
+    [SerializeField] private float _elapsedBufferTime = 0f;
     private GameObject _draggedObject;
-    public Vector2 _savedMousePosition;
-    public Vector3 _initialPosition;
+    [SerializeField] private Vector3 _initialPosition;
     private void Update()
     {
         DragHandler();
@@ -25,6 +34,7 @@ public class DragController : MonoBehaviour
         OnDrag();
     }
 
+    //Handles drag start event
     private void OnDragStart()
     {
         if (Input.GetMouseButtonDown(0))
@@ -45,28 +55,38 @@ public class DragController : MonoBehaviour
         }
     }
 
+    //Handles while dragging event
     private void OnDrag()
     {
+        //make sure that there is an object being dragged
         if (_draggedObject != null && Input.GetMouseButton(0))
         {
-            DiskLiftAnimation();
+            bool isDiskLiftAnimationOver = _animationElapsedTime >= _animationDuration;
+            bool isBufferTimerOver = _elapsedBufferTime >= _bufferDuration;
+            
 
-            if (_bufferTime < 0.2f)
+            if (!isDiskLiftAnimationOver)
             {
-                var center = _camera.ScreenToWorldPoint(new Vector2(_draggedObject.GetComponent<Renderer>().bounds.center.x, _draggedObject.transform.position.y));
-                Cursor.SetCursor(null, center, CursorMode.Auto);
-                _bufferTime += Time.deltaTime;
+                DiskLiftAnimation();
             }
-
-            if (_elapsedTime >= _lerpDuration)
+            else if (!isBufferTimerOver)
+            {
+                var center = _camera.WorldToScreenPoint(new Vector2(_draggedObject.GetComponent<Renderer>().bounds.center.x, _draggedObject.transform.position.y));
+                Debug.Log(center);
+                Debug.Log(_draggedObject.GetComponent<Renderer>().bounds.center.x);
+                Cursor.SetCursor(null, center, CursorMode.Auto);
+                _elapsedBufferTime += Time.deltaTime;
+            }
+            else
             {
                 Vector3 position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, _camera.WorldToScreenPoint(_draggedObject.transform.position).z);
                 Vector3 worldPosition = Camera.main.ScreenToWorldPoint(position);
-                _draggedObject.transform.position = new Vector3(worldPosition.x, 2.5f, 0);
+                _draggedObject.transform.position = new Vector3(worldPosition.x, _maxVerticalHeight, _initialPosition.z);
             }
         }
     }
 
+    //Handles drag end event
     private void OnDragEnd()
     {
         if (Input.GetMouseButtonUp(0))
@@ -79,10 +99,9 @@ public class DragController : MonoBehaviour
     {
         _draggedObject = targetObject;
         _initialPosition = _draggedObject.transform.position;
-        _elapsedTime = 0f;
-        _bufferTime = 0f;
+        _animationElapsedTime = 0f;
+        _elapsedBufferTime = 0f;
         _rigidbody.isKinematic = true;
-        _savedMousePosition = Input.mousePosition;
         Cursor.visible = false;
     }
 
@@ -96,16 +115,17 @@ public class DragController : MonoBehaviour
 
     private void DiskLiftAnimation()
     {
-        if (_elapsedTime < _lerpDuration)
-        {
-            _elapsedTime += Time.deltaTime;
-            float time = _elapsedTime / _lerpDuration;
-            Vector3 targetPosition = new Vector3(_initialPosition.x, 2.5f, 0);
-            Vector3 currentPosition = new Vector3(_draggedObject.transform.position.x, _initialPosition.y, 0);
-            _draggedObject.transform.position = Vector3.Lerp(currentPosition, targetPosition, time);
-            var center = _camera.ScreenToWorldPoint(new Vector2(_draggedObject.GetComponent<Renderer>().bounds.center.x, _draggedObject.transform.position.y));
-            Cursor.SetCursor(null, center, CursorMode.Auto);
-        }
+        //Slowly lerp the position for a seamless lift animation
+        _animationElapsedTime += Time.deltaTime;
+        float time = _animationElapsedTime / _animationDuration;
+
+        Vector3 targetPosition = new Vector3(_initialPosition.x, _maxVerticalHeight, _initialPosition.z);
+        Vector3 currentPosition = new Vector3(_draggedObject.transform.position.x, _initialPosition.y, _initialPosition.z);
+        _draggedObject.transform.position = Vector3.Lerp(currentPosition, targetPosition, time);
+
+        //Sets the cursor position to the center of the object (disabling movement of cursor)
+        var center = _camera.WorldToScreenPoint(new Vector2(_draggedObject.GetComponent<Renderer>().bounds.center.x, _draggedObject.transform.position.y));
+        Cursor.SetCursor(null, center, CursorMode.Auto);
     }
 
     private RaycastHit GetRayCastHit()
