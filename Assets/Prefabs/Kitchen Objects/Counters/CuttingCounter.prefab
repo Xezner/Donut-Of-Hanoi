@@ -26,12 +26,12 @@ Transform:
   m_GameObject: {fileID: 1868090295796305486}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -8.5, y: -3.3341703, z: 3.46}
-  m_LocalScale: {x: 2.5, y: 1, z: 2.5}
+  m_LocalScale: {x: 2.4999998, y: 1, z: 2.4999998}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6096278200684726795}
   - {fileID: 9206442695528951027}
-  - {fileID: 2798459858551050652}
+  - {fileID: 2403964626877118064}
   m_Father: {fileID: 0}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -67,6 +67,7 @@ GameObject:
   - component: {fileID: 6096278200684726795}
   - component: {fileID: 6338729034789628390}
   - component: {fileID: 6297708879111881631}
+  - component: {fileID: 7580092155738264232}
   m_Layer: 0
   m_Name: KitchenCounter
   m_TagString: Untagged
@@ -139,6 +140,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &7580092155738264232
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117009397595508120}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.89865047, y: 0.84320694, z: 0.87829274}
+  m_Center: {x: -0.000000059604645, y: 0.41806248, z: 0.020090245}
 --- !u!1 &9000334304004010344
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,7 +190,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2798459858551050652}
+  m_Father: {fileID: 2403964626877118064}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!96 &4603527312816987946
@@ -381,7 +403,7 @@ PrefabInstance:
       addedObject: {fileID: 2194089648722313124}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c6ab874a4b6ade44ebeaa67b5ecf08a2, type: 3}
---- !u!4 &2798459858551050652 stripped
+--- !u!4 &2403964626877118064 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c6ab874a4b6ade44ebeaa67b5ecf08a2,
     type: 3}
