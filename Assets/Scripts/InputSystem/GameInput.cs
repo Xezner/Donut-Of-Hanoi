@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GameInput : MonoBehaviour
 {
+    private InputSystem inputSystem;
+
     public static GameInput Instance;
     private void Awake()
     {
@@ -11,29 +13,19 @@ public class GameInput : MonoBehaviour
         {
             Instance = this;
         }
+
+        inputSystem = new();
+        inputSystem.Player.Enable();
     }
 
     public Vector3 GetMovementInputNormalized()
     {
-        Vector3 moveInput = Vector3.zero;
+        Vector2 moveInputXY = inputSystem.Player.Move.ReadValue<Vector2>().normalized;
 
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-        {
-            moveInput.z = 1;
-        }
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-        {
-            moveInput.z = -1;
-        }
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-        {
-            moveInput.x = -1;
-        }
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-        {
-            moveInput.x = 1;
-        }
+        Vector3 moveInput = new(moveInputXY.x, 0f, moveInputXY.y);
 
-        return moveInput.normalized;
+        return moveInput;
     }
+
+
 }
