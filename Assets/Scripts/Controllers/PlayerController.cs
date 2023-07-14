@@ -22,6 +22,11 @@ public class PlayerController : MonoBehaviour
     private CounterObject _lastInteractedCounter;
     private bool _isMoving;
 
+    private void Start()
+    {
+        GameInput.Instance.OnInteractAction += Instance_OnInteractAction;
+    }
+
     private void Update()
     {
         InteractionHandler();
@@ -136,6 +141,12 @@ public class PlayerController : MonoBehaviour
                 _lastInteractedCounter.ResetSelectedOverlay();
             }
         }
+    }
+
+
+    private void Instance_OnInteractAction(object sender, System.EventArgs e)
+    {
+        Debug.Log("HELLO");
     }
 
     public bool IsMoving()
