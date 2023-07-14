@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8977874162593693411}
   - component: {fileID: 6304040392533061775}
   - component: {fileID: 9015514023677168080}
+  - component: {fileID: 1170049053341887449}
   m_Layer: 0
   m_Name: GO_Donut_Orange
   m_TagString: Untagged
@@ -29,13 +30,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7329527321157372418}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.008, y: 2.581, z: 7.714}
-  m_LocalScale: {x: 0.67, y: 0.47, z: 0.67}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.47, y: 0.32970145, z: 0.47}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7563731617530644706}
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7577351951142080800
 MonoBehaviour:
@@ -5827,7 +5828,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 29
+  m_VersionIndex: 32
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -5931,6 +5932,22 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &1170049053341887449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7329527321157372418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a3e332d178b4a84ba6c8115a9e2eae0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _diskData: {fileID: 11400000, guid: 28d1f941033899242bd3170095eee938, type: 2}
+  _rigidbody: {fileID: 6304040392533061775}
+  _collider: {fileID: 9015514023677168080}
+  DiskValue: 6
 --- !u!1001 &8537444002751640995
 PrefabInstance:
   m_ObjectHideFlags: 0
