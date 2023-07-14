@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using static PlayerController;
 
 public class PlayerController : MonoBehaviour
@@ -14,11 +15,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _playerRadius = 0.7f;
     [SerializeField] private float _playerHeight = 2f;
 
-    [SerializeField] private PlayerData _playerData;
+    [Header("Interaction Data")]
+    [SerializeField] private float _interactionDistance = 2f;
+    [SerializeField] private LayerMask _interactedLayerMask;
+    private Vector3 _lastInteractionDirection;
+    private CounterObject _lastInteractedCounter;
     private bool _isMoving;
 
     private void Update()
     {
+        InteractionHandler();
         MovementController();
     }
 
@@ -101,12 +107,48 @@ public class PlayerController : MonoBehaviour
         return !Physics.CapsuleCast(playerPosition, playerHeadPosition, playerRadius, moveDirection, moveDistance);
     }
 
+    private void InteractionHandler()
+    {
+        Vector3 moveInput = GameInput.Instance.GetMovementInputNormalized();
+
+        if(moveInput != Vector3.zero)
+        {
+            _lastInteractionDirection = moveInput;
+        }
+
+        if (Physics.Raycast(transform.position, _lastInteractionDirection, out RaycastHit raycastHit, _interactionDistance, _interactedLayerMask))
+        {
+            if (raycastHit.transform.parent.TryGetComponent(out CounterObject counterObject))
+            {
+                if(!IsLastInteractedCounterEmpty() && _lastInteractedCounter != counterObject)
+                {
+                    _lastInteractedCounter.ResetSelectedOverlay();
+                }
+
+                _lastInteractedCounter = counterObject;
+                counterObject.SetSelectedOverlay();
+            }
+        }
+        else
+        {
+            if (!IsLastInteractedCounterEmpty())
+            {
+                _lastInteractedCounter.ResetSelectedOverlay();
+            }
+        }
+    }
+
     public bool IsMoving()
     {
         return _isMoving;
     }
 
-    public struct PlayerData
+    public bool IsLastInteractedCounterEmpty()
+    {
+        return _lastInteractedCounter == null;
+    }
+
+    private struct PlayerData
     {
         public Vector3 PlayerPosition;
         public Vector3 PlayerHeadPosition;

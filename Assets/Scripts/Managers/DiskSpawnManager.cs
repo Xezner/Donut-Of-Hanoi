@@ -13,7 +13,19 @@ public class DiskSpawnManager : MonoBehaviour
     [SerializeField] private int _spawnSize = 9;
 
     [Header("Spawn List")]
-    [SerializeField] List<GameObject> _spawnList = new List<GameObject>();
+    [SerializeField] List<GameObject> _spawnList = new();
+    [SerializeField] Stack<GameObject> _spawnStack = new();
+
+
+    public static DiskSpawnManager Instance;
+
+    private void Awake()
+    {
+        if(Instance == null)
+        {
+            Instance = this;
+        }
+    }
 
     private void Start()
     {
@@ -22,9 +34,19 @@ public class DiskSpawnManager : MonoBehaviour
 
     private void SetSpawnSize()
     {
-        if (_spawnSize != _spawnList.Count)
+        _spawnStack = new(_spawnList);
+        foreach(GameObject spawn in _spawnStack)
         {
-            _spawnList.RemoveRange(_spawnSize, _spawnList.Count - _spawnSize);
+            Debug.Log(spawn.name);
+        }
+        if (_spawnSize < _spawnStack.Count)
+        {
+            int itemsToRemove = _spawnStack.Count - _spawnSize;
+            for(int i = 0; i < itemsToRemove; i++)
+            {
+                _spawnStack.Pop();
+            }
+            //_spawnList.RemoveRange(_spawnSize, _spawnList.Count - _spawnSize);
         }
     }
 
@@ -33,13 +55,19 @@ public class DiskSpawnManager : MonoBehaviour
         SetSpawnSize();
         bool initialSpawn = true;
         float spawnOffset = _spawnOffsetHeight;
-        foreach(GameObject disk in _spawnList)
+        List<GameObject> spawnList = new(_spawnStack);
+        for (int i = spawnList.Count - 1; i >= 0; i--)
         {
-            Debug.Log(disk.name);
+            Debug.Log(spawnList[i].name);
             Vector3 spawnPosition = _spawnPosition.position + new Vector3(0f, initialSpawn ? _initialSpawnHeight: spawnOffset, 0f);
-            Instantiate(disk, spawnPosition, Quaternion.identity, transform);
+            Instantiate(spawnList[i], spawnPosition, Quaternion.identity, transform);
             spawnOffset += _spawnOffsetHeight;
             initialSpawn = false;
         }
+    }
+
+    public Stack<GameObject> GetDiskStack()
+    {
+        return _spawnStack;
     }
 }
