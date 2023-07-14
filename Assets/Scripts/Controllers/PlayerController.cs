@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
     private void MovementController()
     {
         Vector3 moveInput = GameInput.Instance.GetMovementInputNormalized();
+        Vector3 moveDirection = moveInput;
         float moveDistance = _moveSpeed * Time.deltaTime;
 
         Vector3 playerHeadPosition = transform.position + Vector3.up * _playerHeight;
@@ -52,9 +53,12 @@ public class PlayerController : MonoBehaviour
             transform.position += moveInput * moveDistance;
         }
 
-        transform.forward = Vector3.Slerp(transform.forward, moveInput, _turnSpeed * Time.deltaTime);
-
         _isMoving = moveInput != Vector3.zero;
+
+        moveDirection = _isMoving ? moveInput : moveDirection;
+        transform.forward = Vector3.Slerp(transform.forward, moveDirection, _turnSpeed * Time.deltaTime);
+
+        
     }
 
     private void CheckForCollision(PlayerData playerData, ref bool canMove, ref Vector3 moveInput)
