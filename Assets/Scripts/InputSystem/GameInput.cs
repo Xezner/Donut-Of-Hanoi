@@ -28,6 +28,7 @@ public class GameInput : MonoBehaviour
     //Event system for Interact Button (Space)
     private void Interact_performed(InputAction.CallbackContext obj)
     {
+        //!!TODO: ADD GAME PAUSE / GAME CONTROLLABLE
         OnInteractAction?.Invoke(this, EventArgs.Empty);
     }
 

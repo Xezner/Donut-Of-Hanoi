@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39f58022a5e1ba0488e103a78a7d7d1d, type: 3}
+  m_Name: DiskData_White
+  m_EditorClassIdentifier: 
+  DiskPrefab: {fileID: 8959933639892762149, guid: f899b08d780b19f4f9319d14b8824584,
+    type: 3}
+  DiskObject: {fileID: 8114400153438709358, guid: f899b08d780b19f4f9319d14b8824584,
+    type: 3}
+  DiskValue: 3

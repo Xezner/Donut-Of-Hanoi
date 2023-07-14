@@ -6,6 +6,7 @@ public class DiskSpawnManager : MonoBehaviour
 {
     [Header("Target Spawn Point")]
     [SerializeField] private Transform _spawnPosition;
+    [SerializeField] private DiskHolder _spawnDiskHolder;
 
     [Header("Spawn Values")]
     [SerializeField] private float _initialSpawnHeight = 1f;
@@ -13,8 +14,9 @@ public class DiskSpawnManager : MonoBehaviour
     [SerializeField] private int _spawnSize = 9;
 
     [Header("Spawn List")]
-    [SerializeField] List<GameObject> _spawnList = new();
-    [SerializeField] Stack<GameObject> _spawnStack = new();
+    [SerializeField] List<DiskData> _diskDataList = new();
+    List<GameObject> _spawnList = new();
+    Stack<GameObject> _spawnStack = new();
 
 
     public static DiskSpawnManager Instance;
@@ -29,41 +31,58 @@ public class DiskSpawnManager : MonoBehaviour
 
     private void Start()
     {
+        //!!TODO: MOVE SPAWN DISKS TO GAME MANAGER
         SpawnDisks();
     }
 
-    private void SetSpawnSize()
+    private void InitSpawnList()
     {
-        _spawnStack = new(_spawnList);
-        foreach(GameObject spawn in _spawnStack)
+        foreach(DiskData diskData in _diskDataList)
         {
-            Debug.Log(spawn.name);
+            diskData.DiskObject.SetDiskValue();
+            _spawnList.Add(diskData.DiskPrefab);
         }
-        if (_spawnSize < _spawnStack.Count)
+        _spawnStack = new(_spawnList);
+    }
+
+    private void SetSpawnSize(int spawnSize)
+    {
+        InitSpawnList();
+        if (spawnSize < _spawnStack.Count)
         {
-            int itemsToRemove = _spawnStack.Count - _spawnSize;
+            int itemsToRemove = _spawnStack.Count - spawnSize;
             for(int i = 0; i < itemsToRemove; i++)
             {
                 _spawnStack.Pop();
             }
-            //_spawnList.RemoveRange(_spawnSize, _spawnList.Count - _spawnSize);
-        }
+        }  
     }
 
     public void SpawnDisks()
     {
-        SetSpawnSize();
+        SetSpawnSize(_spawnSize);
+
         bool initialSpawn = true;
         float spawnOffset = _spawnOffsetHeight;
+
         List<GameObject> spawnList = new(_spawnStack);
+        Stack<GameObject> spawnStack = new();
+
         for (int i = spawnList.Count - 1; i >= 0; i--)
         {
-            Debug.Log(spawnList[i].name);
-            Vector3 spawnPosition = _spawnPosition.position + new Vector3(0f, initialSpawn ? _initialSpawnHeight: spawnOffset, 0f);
-            Instantiate(spawnList[i], spawnPosition, Quaternion.identity, transform);
+            Vector3 spawnOffsetPosition = new(0f, initialSpawn ? _initialSpawnHeight : spawnOffset, 0f);
+            Vector3 spawnPosition = _spawnPosition.position + spawnOffsetPosition;
+
+            GameObject spawn = Instantiate(spawnList[i], spawnPosition, Quaternion.identity, _spawnPosition.transform);
+
+            spawnStack.Push(spawn);
+
             spawnOffset += _spawnOffsetHeight;
+
             initialSpawn = false;
         }
+        _spawnStack = new(spawnStack);
+        _spawnDiskHolder.SetDiskStack(spawnStack);
     }
 
     public Stack<GameObject> GetDiskStack()

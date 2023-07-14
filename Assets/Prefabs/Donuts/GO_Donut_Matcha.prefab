@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1770572734763119061}
   - component: {fileID: 9065146200869177052}
   - component: {fileID: 4647748268156022257}
+  - component: {fileID: 5357923316664384481}
   m_Layer: 0
   m_Name: GO_Donut_Matcha
   m_TagString: Untagged
@@ -29,13 +30,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 918733806095159987}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.008, y: 2.223, z: 7.714}
-  m_LocalScale: {x: 0.67, y: 0.47, z: 0.67}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.52, y: 0.36477607, z: 0.52}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7406780869409874773}
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4922710358088450133
 MonoBehaviour:
@@ -5931,6 +5932,22 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &5357923316664384481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918733806095159987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a3e332d178b4a84ba6c8115a9e2eae0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _diskData: {fileID: 11400000, guid: 6eae9175d73a0834c96140214d7ba710, type: 2}
+  _rigidbody: {fileID: 9065146200869177052}
+  _collider: {fileID: 4647748268156022257}
+  DiskValue: 7
 --- !u!1001 &8666885251233439252
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -7,6 +8,7 @@ using static PlayerController;
 
 public class PlayerController : MonoBehaviour
 {
+    #region Variables
     [Header("Player Movement")]
     [SerializeField] private float _moveSpeed = 7f;
     [SerializeField] private float _turnSpeed = 10f;
@@ -18,17 +20,41 @@ public class PlayerController : MonoBehaviour
     [Header("Interaction Data")]
     [SerializeField] private float _interactionDistance = 2f;
     [SerializeField] private LayerMask _interactedLayerMask;
+
+
     private Vector3 _lastInteractionDirection;
     private CounterObject _lastInteractedCounter;
     private bool _isMoving;
 
+    public static PlayerController Instance;
+    #endregion
+
+    #region Interaction Change Event
+    //Event for setting up interaction changes
+    public event EventHandler<OnInteractCounterChangedEventArgs> OnInteractedCounterChanged;
+    public class OnInteractCounterChangedEventArgs : EventArgs
+    {
+        public CounterObject InteractedCounter;
+    }
+    #endregion
+
+    private void Awake()
+    {
+        if(Instance == null)
+        {
+            Instance = this;
+        }
+    }
+
     private void Start()
     {
+        //Subscribe to the OnInteractAction event
         GameInput.Instance.OnInteractAction += Instance_OnInteractAction;
     }
 
     private void Update()
     {
+        //!!TODO: ADD GAME PAUSE / GAME CONTROLLABLE
         InteractionHandler();
         MovementController();
     }
@@ -125,38 +151,44 @@ public class PlayerController : MonoBehaviour
         {
             if (raycastHit.transform.parent.TryGetComponent(out CounterObject counterObject))
             {
-                if(!IsLastInteractedCounterEmpty() && _lastInteractedCounter != counterObject)
+                if (counterObject != _lastInteractedCounter)
                 {
-                    _lastInteractedCounter.ResetSelectedOverlay();
+                    SetInteractedCounter(counterObject);
                 }
-
-                _lastInteractedCounter = counterObject;
-                counterObject.SetSelectedOverlay();
+            }
+            else
+            {
+                SetInteractedCounter(null);
             }
         }
         else
         {
-            if (!IsLastInteractedCounterEmpty())
-            {
-                _lastInteractedCounter.ResetSelectedOverlay();
-            }
+            SetInteractedCounter(null);
         }
     }
 
+    private void SetInteractedCounter(CounterObject counterObject)
+    {
+        _lastInteractedCounter = counterObject;
+
+        OnInteractedCounterChanged?.Invoke(this, new OnInteractCounterChangedEventArgs
+        {
+            InteractedCounter = counterObject
+        });
+    }
 
     private void Instance_OnInteractAction(object sender, System.EventArgs e)
     {
-        Debug.Log("HELLO");
+        if(_lastInteractedCounter != null)
+        {
+            InteractionManager.Instance.InteractOnCounter(_lastInteractedCounter);
+        }
+        
     }
 
     public bool IsMoving()
     {
         return _isMoving;
-    }
-
-    public bool IsLastInteractedCounterEmpty()
-    {
-        return _lastInteractedCounter == null;
     }
 
     private struct PlayerData
