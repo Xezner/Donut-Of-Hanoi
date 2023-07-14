@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 7369264653897255784}
   - component: {fileID: 537674476300407508}
   - component: {fileID: 3747930056841013862}
-  - component: {fileID: 1982016315768872804}
+  - component: {fileID: 8595501454281343191}
+  - component: {fileID: 8114400153438709358}
   m_Layer: 0
   m_Name: GO_Donut_White
   m_TagString: Untagged
@@ -28,14 +29,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8959933639892762149}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.623, z: 7.714}
-  m_LocalScale: {x: 0.67, y: 0.47, z: 0.67}
-  m_ConstrainProportionsScale: 0
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.31, y: 0.21746267, z: 0.31}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2760458651512981916}
   m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8092549417467425539
 MonoBehaviour:
@@ -5827,7 +5828,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 29
+  m_VersionIndex: 32
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -5909,8 +5910,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!64 &1982016315768872804
-MeshCollider:
+--- !u!65 &8595501454281343191
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -5927,10 +5928,25 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
+  serializedVersion: 3
+  m_Size: {x: 3.5, y: 0.6, z: 3.5}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8114400153438709358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8959933639892762149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a3e332d178b4a84ba6c8115a9e2eae0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _diskData: {fileID: 11400000, guid: 431d17b0dcdcd0449a5e7839608d0dc5, type: 2}
+  _rigidbody: {fileID: 3747930056841013862}
+  _collider: {fileID: 8595501454281343191}
+  DiskValue: 3
 --- !u!1001 &4090327592569615581
 PrefabInstance:
   m_ObjectHideFlags: 0
