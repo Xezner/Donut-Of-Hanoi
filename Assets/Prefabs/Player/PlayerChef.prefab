@@ -28,14 +28,14 @@ Transform:
   m_GameObject: {fileID: 582434629508953758}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.326, y: 0, z: 1.82}
-  m_LocalScale: {x: 1.35, y: 1.35, z: 1.35}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8674467989622553854}
   - {fileID: 4596694271931824235}
   - {fileID: 7235628802604020225}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &8623973475555060215
 Animator:
@@ -71,6 +71,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveSpeed: 7
+  _turnSpeed: 10
+  _playerRadius: 0.7
+  _playerHeight: 2
+  _interactionDistance: 2
+  _interactedLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &4273331080840849103
 MonoBehaviour:
   m_ObjectHideFlags: 0
