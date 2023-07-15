@@ -61,10 +61,6 @@ public class DiskHolder : MonoBehaviour
 
     public void SetDiskStack(Stack<GameObject> diskStack)
     {
-        foreach(GameObject disk in diskStack)
-        {
-            Debug.Log($"Disk Stack: {disk}");
-        }
         _diskList = new(diskStack);
         _diskStack = diskStack;
     }

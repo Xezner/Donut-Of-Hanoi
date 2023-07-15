@@ -59,9 +59,9 @@ public class DiskSpawnManager : MonoBehaviour
         }  
     }
 
-    public void SpawnDisks()
+    public void SpawnDisks(int spawnSize = 9)
     {
-        SetSpawnSize(_spawnSize);
+        SetSpawnSize(spawnSize);
 
         bool initialSpawn = true;
         float spawnOffset = _spawnOffsetHeight;
