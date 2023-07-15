@@ -9,8 +9,12 @@ public class CameraController : MonoBehaviour
     [SerializeField] float _followSpeed;
     private void LateUpdate()
     {
-        Vector3 targetPosition = _player.transform.position + _offset;
+        if(GameManager.Instance.IsGamePaused)
+        {
+            return;
+        }
 
+        Vector3 targetPosition = _player.transform.position + _offset;
         transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * _followSpeed);
     }
 }

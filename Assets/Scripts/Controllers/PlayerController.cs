@@ -54,7 +54,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if(GameManager.Instance.IsGamePaused && GameManager.Instance.IsPlayerControllable)
+        if(GameManager.Instance.IsGamePaused && !GameManager.Instance.IsPlayerControllable)
         {
             return;
         }
