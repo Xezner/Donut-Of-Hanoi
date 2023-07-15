@@ -8,12 +8,6 @@ public class DiskHolder : MonoBehaviour
     [SerializeField]private List<GameObject> _diskList = new();
     private Stack<GameObject> _diskStack = new();
 
-    private void Start()
-    {
-        _diskStack.Clear();
-        _diskList.Clear();
-    }
-
     public void PushDisk(GameObject disk)
     {
         _diskList.Add(disk);
@@ -67,6 +61,10 @@ public class DiskHolder : MonoBehaviour
 
     public void SetDiskStack(Stack<GameObject> diskStack)
     {
+        foreach(GameObject disk in diskStack)
+        {
+            Debug.Log($"Disk Stack: {disk}");
+        }
         _diskList = new(diskStack);
         _diskStack = diskStack;
     }

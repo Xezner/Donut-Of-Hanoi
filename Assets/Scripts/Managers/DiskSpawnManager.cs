@@ -16,7 +16,7 @@ public class DiskSpawnManager : MonoBehaviour
 
     [Header("Spawn List")]
     [SerializeField] List<DiskData> _diskDataList = new();
-    List<GameObject> _spawnList = new();
+    [SerializeField] List<GameObject> _spawnList = new();
     Stack<GameObject> _spawnStack = new();
 
 
@@ -33,7 +33,7 @@ public class DiskSpawnManager : MonoBehaviour
     private void Start()
     {
         //!!TODO: MOVE SPAWN DISKS TO GAME MANAGER
-        SpawnDisks();
+        //SpawnDisks();
     }
 
     private void InitSpawnList()
@@ -83,6 +83,7 @@ public class DiskSpawnManager : MonoBehaviour
             initialSpawn = false;
         }
         _spawnStack = new(spawnStack);
+        _spawnList = new(_spawnStack);
         _spawnDiskHolder.SetDiskStack(spawnStack);
     }
 
