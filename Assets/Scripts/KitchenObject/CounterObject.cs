@@ -31,21 +31,14 @@ public class CounterObject : MonoBehaviour
         Stack<GameObject> deliveryCounterStack = new(_diskHolder.GetDiskStack());
         Stack<GameObject> targetStack = new(DiskSpawnManager.Instance.GetDiskStack());
 
-        foreach(GameObject disk in deliveryCounterStack)
-        {
-            Debug.Log($"Delivery Stack: {disk}");
-        }
-        foreach (GameObject disk in targetStack)
-        {
-            Debug.Log($"Target: {disk}");
-        }
-
         bool isStackEqual = deliveryCounterStack.SequenceEqual(targetStack);
 
         if (isStackEqual)
         {
             Debug.Log("Delivery Success! Good job!");
             GameManager.Instance.SuccessPrompt(this.transform.position);
+
+            GameManager.Instance.GameOverScreen();
         }
         else
         {
