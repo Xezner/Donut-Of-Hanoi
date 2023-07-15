@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     [Header("Interaction Data")]
     [SerializeField] private float _interactionDistance = 2f;
     [SerializeField] private LayerMask _interactedLayerMask;
-
+    [SerializeField] private LayerMask _FTUELayerMask;
 
     private Vector3 _lastInteractionDirection;
     private CounterObject _lastInteractedCounter;
@@ -139,7 +139,13 @@ public class PlayerController : MonoBehaviour
         //Player position = pivot point
         //Player head position = top position of the object
         //Player radius = size of the object
-        return !Physics.CapsuleCast(playerPosition, playerHeadPosition, playerRadius, moveDirection, moveDistance);
+        bool canMove = true;
+        if(Physics.CapsuleCast(playerPosition, playerHeadPosition, playerRadius, moveDirection, out RaycastHit raycastHit, moveDistance))
+        {
+            //The layer mask value for the reference of FTUELayerMask became 128, which I obeserved is 2^7 so i just extracted the exponent using Math.log with base 2, still questionable why that is the case, researching but couldn't find any answer, leaving this as is for now
+            canMove = raycastHit.transform.gameObject.layer == Math.Log(_FTUELayerMask.value, 2);
+        }
+        return canMove;
     }
 
     private void InteractionHandler()
@@ -151,6 +157,7 @@ public class PlayerController : MonoBehaviour
             _lastInteractionDirection = moveInput;
         }
 
+        //Check if we are interacting with the counter objects with the interacted layer mask
         if (Physics.Raycast(transform.position, _lastInteractionDirection, out RaycastHit raycastHit, _interactionDistance, _interactedLayerMask))
         {
             if (raycastHit.transform.parent.TryGetComponent(out CounterObject counterObject))
@@ -171,6 +178,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //Event function that sets the last interacted counter to the current counter being interacted
     private void SetInteractedCounter(CounterObject counterObject)
     {
         _lastInteractedCounter = counterObject;
@@ -181,6 +189,7 @@ public class PlayerController : MonoBehaviour
         });
     }
 
+    //Event function that runs the method InteractOncounter from interactionmanager
     private void Instance_OnInteractAction(object sender, System.EventArgs e)
     {
         if(_lastInteractedCounter != null)

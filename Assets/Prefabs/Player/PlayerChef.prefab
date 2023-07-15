@@ -36,7 +36,7 @@ Transform:
   - {fileID: 7235628802604020225}
   - {fileID: 4372124419752654783}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &8623973475555060215
 Animator:
@@ -79,6 +79,9 @@ MonoBehaviour:
   _interactedLayerMask:
     serializedVersion: 2
     m_Bits: 64
+  _FTUELayerMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!114 &4273331080840849103
 MonoBehaviour:
   m_ObjectHideFlags: 0

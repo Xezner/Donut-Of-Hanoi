@@ -7,6 +7,11 @@ public class CursorManager : MonoBehaviour
     [SerializeField] Texture2D _cursorTextre;
     private Vector2 _cursorHotSpot = Vector2.zero;
 
+    private void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
+    }
+
     private void Start()
     {
         Cursor.SetCursor(_cursorTextre, _cursorHotSpot, CursorMode.Auto);
