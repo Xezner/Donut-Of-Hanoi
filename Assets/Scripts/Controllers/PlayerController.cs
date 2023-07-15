@@ -63,6 +63,32 @@ public class PlayerController : MonoBehaviour
         MovementController();
     }
 
+    //Handles value changed event that sets the last interacted counter to the current counter being interacted
+    private void SetInteractedCounter(CounterObject counterObject)
+    {
+        _lastInteractedCounter = counterObject;
+
+        OnInteractedCounterChanged?.Invoke(this, new OnInteractCounterChangedEventArgs
+        {
+            InteractedCounter = counterObject
+        });
+    }
+
+    //Event function that runs the method InteractOncounter from interactionmanager
+    private void Instance_OnInteractAction(object sender, System.EventArgs e)
+    {
+        if(GameManager.Instance.IsGamePaused)
+        {
+            return;
+        }
+
+        if (_lastInteractedCounter != null)
+        {
+            InteractionManager.Instance.InteractOnCounter(_lastInteractedCounter);
+        }
+
+    }
+
     private void MovementController()
     {
         Vector3 moveInput = GameInput.Instance.GetMovementInputNormalized();
@@ -97,9 +123,10 @@ public class PlayerController : MonoBehaviour
         _isMoving = moveInput != Vector3.zero;
 
         moveDirection = _isMoving ? moveInput : moveDirection;
-        transform.forward = Vector3.Slerp(transform.forward, moveDirection, _turnSpeed * Time.deltaTime);
-
-        
+        if (moveDirection != Vector3.zero)
+        {
+            transform.forward = Vector3.Slerp(transform.forward, moveDirection, _turnSpeed * Time.deltaTime);
+        }
     }
 
     private void CheckForCollision(PlayerData playerData, ref bool canMove, ref Vector3 moveInput)
@@ -144,15 +171,23 @@ public class PlayerController : MonoBehaviour
         {
             //The layer mask value for the reference of FTUELayerMask became 128, which I obeserved is 2^7 so i just extracted the exponent using Math.log with base 2, still questionable why that is the case, researching but couldn't find any answer, leaving this as is for now
             canMove = raycastHit.transform.gameObject.layer == Math.Log(_FTUELayerMask.value, 2);
+            if(canMove && !FTUEManager.Instance.GetBool(FTUE.InteractTutorial))
+            {
+                FTUEManager.Instance.InteractTutorialStart();
+            }
         }
         return canMove;
+    }
+    public bool IsMoving()
+    {
+        return _isMoving;
     }
 
     private void InteractionHandler()
     {
         Vector3 moveInput = GameInput.Instance.GetMovementInputNormalized();
 
-        if(moveInput != Vector3.zero)
+        if (moveInput != Vector3.zero)
         {
             _lastInteractionDirection = moveInput;
         }
@@ -176,32 +211,6 @@ public class PlayerController : MonoBehaviour
         {
             SetInteractedCounter(null);
         }
-    }
-
-    //Event function that sets the last interacted counter to the current counter being interacted
-    private void SetInteractedCounter(CounterObject counterObject)
-    {
-        _lastInteractedCounter = counterObject;
-
-        OnInteractedCounterChanged?.Invoke(this, new OnInteractCounterChangedEventArgs
-        {
-            InteractedCounter = counterObject
-        });
-    }
-
-    //Event function that runs the method InteractOncounter from interactionmanager
-    private void Instance_OnInteractAction(object sender, System.EventArgs e)
-    {
-        if(_lastInteractedCounter != null)
-        {
-            InteractionManager.Instance.InteractOnCounter(_lastInteractedCounter);
-        }
-        
-    }
-
-    public bool IsMoving()
-    {
-        return _isMoving;
     }
 
     private struct PlayerData

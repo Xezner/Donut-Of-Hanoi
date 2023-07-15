@@ -27,6 +27,11 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
+    public GameObject GetPoppedDisk()
+    {
+        return _poppedDisk;
+    }
+
     //Handles interaction state if take(pickup) or place
     public void InteractOnCounter(CounterObject counterObject)
     {

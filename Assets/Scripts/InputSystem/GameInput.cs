@@ -48,7 +48,7 @@ public class GameInput : MonoBehaviour
         {
             return;
         }
-        GameManager.Instance.PauseGame();
+        GameManager.Instance.PauseGameToggle();
     }
 
     //Returns the vector3 for the movement input using the new input system
