@@ -10,12 +10,14 @@ public class CounterObject : MonoBehaviour
 
     private void Start()
     {
+        //Only subscribe to the event if the counter object is the delivery counter
         if (_isDeliveryCounter)
         {
             InteractionManager.Instance.OnDiskStackChange += Instance_OnDiskStackChange;
         }
     }
 
+    //If disk stack change for the delivery counter, check if the solution is correct
     private void Instance_OnDiskStackChange(object sender, InteractionManager.OnDiskStackChangeEventArgs diskStackChangeEvent)
     {
         if(_isDeliveryCounter)
@@ -26,22 +28,14 @@ public class CounterObject : MonoBehaviour
 
     private void CheckDiskHolderStack()
     {
-        bool isStackEqual = _diskHolder.GetDiskStack().SequenceEqual(DiskSpawnManager.Instance.GetDiskStack());
-        
-        foreach(GameObject disk in _diskHolder.GetDiskStack())
-        {
-            Debug.Log($"This Disk: {disk}");
-        }
+        Stack<GameObject> deliveryCounterStack = _diskHolder.GetDiskStack();
+        Stack<GameObject> targetStack = DiskSpawnManager.Instance.GetDiskStack();
 
-        foreach(GameObject disk in DiskSpawnManager.Instance.GetDiskStack())
-        {
-            Debug.Log($"Spawner's Disk: {disk}");
-        }
+        bool isStackEqual = deliveryCounterStack.SequenceEqual(targetStack);
 
         if (isStackEqual)
         {
-            //Add game over logic here
-            Debug.Log("TRUE");
+            GameManager.Instance.SuccessPrompt();
         }
         else
         {

@@ -36,7 +36,7 @@ Transform:
   - {fileID: 7235628802604020225}
   - {fileID: 4372124419752654783}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &8623973475555060215
 Animator:
@@ -607,6 +607,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 973578445664733142, guid: 631464ec81c874d47a0b78f1bcde552b,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2673004531960388385, guid: 631464ec81c874d47a0b78f1bcde552b,
         type: 3}
       propertyPath: m_IsKinematic
@@ -695,7 +700,7 @@ PrefabInstance:
     - target: {fileID: 4847205056437721008, guid: 631464ec81c874d47a0b78f1bcde552b,
         type: 3}
       propertyPath: m_VersionIndex
-      value: 32
+      value: 29
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

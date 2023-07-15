@@ -6,6 +6,7 @@ using static PlayerController;
 
 public class InteractionManager : MonoBehaviour
 {
+    [Header("Player Disk")]
     [SerializeField] private Transform _playerDiskHolder;
 
     private GameObject _poppedDisk;
@@ -43,6 +44,11 @@ public class InteractionManager : MonoBehaviour
     public void TakeDiskOnCounter(CounterObject counterObject)
     {
         _poppedDisk = counterObject.GetDiskHolder().GetPoppedDisk();
+        if(_poppedDisk == null)
+        {
+            GameManager.Instance.ErrorPrompt(ErrorType.EmptyCounter);
+            return;
+        }
         _poppedDiskObject = _poppedDisk.GetComponent<DiskObject>();
         SetDiskToPlayer();
     }
@@ -55,6 +61,7 @@ public class InteractionManager : MonoBehaviour
 
         if (topDisk && _poppedDiskObject.DiskValue > topDisk.GetComponent<DiskObject>().DiskValue)
         {
+            GameManager.Instance.ErrorPrompt(ErrorType.CantPlaceHere);
             Debug.Log("Cannot Place This Object on a smaller disk");
             return;
         }
