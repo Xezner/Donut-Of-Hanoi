@@ -16,6 +16,11 @@ public class PlayerAnimator : MonoBehaviour
 
     private void Update()
     {
+        if(GameManager.Instance.IsGamePaused)
+        {
+            return;
+        }
+
         _animator.SetBool(IS_WALKING, _player.IsMoving());
     }
 

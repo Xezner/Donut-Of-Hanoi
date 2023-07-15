@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,8 +38,12 @@ public class GameManager : MonoBehaviour
         {
             InitGameStart();
         }
+        if(loadedScene.name == BuildScene.FTUEScene.ToString())
+        {
+            InitFTUEStart();
+        }
     }
-    public void InitGameStart()
+    private void InitGameStart()
     {
         _errorPrompt.gameObject.SetActive(true);
         _errorPrompt.GetPlayer();
@@ -48,12 +53,22 @@ public class GameManager : MonoBehaviour
         _worldSpaceCanvas.worldCamera = Camera.main;
     }
 
+    public void InitFTUEStart()
+    {
+
+    }
 
     public void StartGame()
     {
-        //!!TODO: Add FTUE Checker here
-        SceneManager.LoadSceneAsync((int)BuildScene.GameScene);
+        //!!TODO: Add FTUE Checker here and check what scene to view
+        BuildSceneManager.Instance.LoadSceneAsync(BuildScene.GameScene);
         IsGamePaused = false;
+    }
+
+    public void PauseGame()
+    {
+        IsGamePaused = !IsGamePaused;
+        Debug.Log($"Game Paused: {IsGamePaused}");
     }
 
     public void QuitGame()
@@ -74,11 +89,6 @@ public class GameManager : MonoBehaviour
         _successUI.transform.position = position + offset;
         _successUI.SetActive(true);
     }
+
 }
 
-public enum BuildScene
-{
-    MainMenuScene = 0,
-    GameScene = 1,
-    FTUEScene = 2,
-}
