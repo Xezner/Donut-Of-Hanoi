@@ -48,13 +48,17 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        //Subscribe to the OnInteractAction event
+        //Subscribe to the OnInteractAction event (space key)
         GameInput.Instance.OnInteractAction += Instance_OnInteractAction;
     }
 
     private void Update()
     {
-        //!!TODO: ADD GAME PAUSE / GAME CONTROLLABLE
+        if(GameManager.Instance.IsGamePaused && GameManager.Instance.IsPlayerControllable)
+        {
+            return;
+        }
+
         InteractionHandler();
         MovementController();
     }

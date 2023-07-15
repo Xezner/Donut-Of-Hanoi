@@ -12,6 +12,7 @@ public class DiskSpawnManager : MonoBehaviour
     [SerializeField] private float _initialSpawnHeight = 1f;
     [SerializeField] private float _spawnOffsetHeight = 0.5f;
     [SerializeField] private int _spawnSize = 9;
+    public int SpawnSize { get { return _spawnSize; } set { _spawnSize = value; } }
 
     [Header("Spawn List")]
     [SerializeField] List<DiskData> _diskDataList = new();
