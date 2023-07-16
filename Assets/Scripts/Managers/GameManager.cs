@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
@@ -47,15 +48,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _gameOverLevelText;
     [SerializeField] private GameObject _nextLevelButton;
 
-
     [Header("UI Pause")]
     [SerializeField] private GameObject _pauseUI;
     [SerializeField] private GameObject _pauseButton;
     [SerializeField] private GameObject _resumeButton;
 
+    [Header("UI Countdown")]
+    [SerializeField] private GameObject _countDownUI;
+    [SerializeField] private TextMeshProUGUI _countDownText;
+
     //GameMode
     private GameMode _gameMode;
-    private int _currentLevel = 1;
+    public int _currentLevel = 0;
+
     //Spawn Data
     private int _spawnSize = 3;
     private int _minSpawnSize = 3;
@@ -76,6 +81,8 @@ public class GameManager : MonoBehaviour
     public bool IsPlayerControllable = true;
     public bool IsGameStarted = false;
     public bool IsPausedByUI = false;
+
+    //Singleton
     public static GameManager Instance;
     private void Awake()
     {
@@ -95,13 +102,16 @@ public class GameManager : MonoBehaviour
         {
             FTUEManager.Instance.ClearPlayerPrefs();
         }
-        Debug.Log("START");
         InitMenuButtons();
+        
+
+        //Subscribe to scene loaded events
         SceneManager.sceneLoaded += SceneManager_sceneLoaded;
     }
 
 
 
+    //Event handler
     private void SceneManager_sceneLoaded(Scene loadedScene, LoadSceneMode arg1)
     {
         if (loadedScene.name == BuildScene.MainMenuScene.ToString())
@@ -125,24 +135,13 @@ public class GameManager : MonoBehaviour
         StartTimer();
         ZenModePopUp();
     }
-    private void InitMenuButtons()
-    {
-        bool isTutorialFinished = FTUEManager.Instance.GetBool(FTUE.FinishedTutorial);
-        _tutorialButton.SetActive(!isTutorialFinished);
-        _startButton.SetActive(isTutorialFinished);
-        _zenModeButton.SetActive(isTutorialFinished);
-    }
-    private void SetGameCountdown()
-    {
-        PauseGame();
-        _countdown = _countdownTimer;
-        IsCountdownStarted = true;
-    }
 
+  
     private void StartCountdown()
     {
         if (IsCountdownStarted && _gameMode != GameMode.FTUE)
         {
+            SetCountDownText(true);
             _countdown -= Time.deltaTime;
             if (_countdown <= 0f)
             {
@@ -150,11 +149,19 @@ public class GameManager : MonoBehaviour
                 Debug.Log("GAME STARTING");
                 DiskSpawnManager.Instance.SpawnDisks(_spawnSize);
                 UnPauseGame();
+                SetCountDownText(false);
                 SetGameCounters();
                 SetGameTimer();
                 SetLevelText();
             }
         }
+    }
+
+    private void SetCountDownText(bool isActive)
+    {
+        _countDownUI.SetActive(isActive);
+        float count = _countdown + 1;
+        _countDownText.text = count >= _countdownTimer ? "3": count.ToString("0");
     }
 
     private void StartTimer()
@@ -166,6 +173,22 @@ public class GameManager : MonoBehaviour
             SetTimerText();
         }
     }
+
+    private void InitMenuButtons()
+    {
+        bool isTutorialFinished = FTUEManager.Instance.GetBool(FTUE.FinishedTutorial);
+        _tutorialButton.SetActive(!isTutorialFinished);
+        _startButton.SetActive(isTutorialFinished);
+        _zenModeButton.SetActive(isTutorialFinished);
+    }
+
+    private void SetGameCountdown()
+    {
+        PauseGame();
+        _countdown = _countdownTimer;
+        IsCountdownStarted = true;
+    }
+
 
     private void SetGameCounters()
     {
@@ -215,27 +238,37 @@ public class GameManager : MonoBehaviour
         switch (_gameMode)
         {
             case GameMode.Standard:
-                {
-                    //spawnSize = currentLevel + Minspawnsize (3) - 1 to get minimum of 3 level at level 1
-                    _spawnSize = _currentLevel + _minSpawnSize - 1;
-                    _spawnSize = _spawnSize > _maxSpawnSize ? _maxSpawnSize : _spawnSize;
-                    _level = _currentLevel;
-                    SetGameCountdown();
-                    break;
-                }
+            {
+                SetStandardSpawnSize();
+                break;
+            }
             case GameMode.ZenMode:
-                {
-                    bool isNumber = int.TryParse(_spawnCountText.text, out _spawnSize);
-                    if(!isNumber)
-                    {
-                        _spawnSize = _minSpawnSize;
-                    }
-
-                    SetGameCountdown();
-                    break;
-                }
+            {
+                SetZenModeSpawnSize();
+                break;
+            }
             default: break;
         }
+    }
+
+    private void SetStandardSpawnSize()
+    {
+        //spawnSize = currentLevel + Minspawnsize (3) - 1 to get minimum of 3 level at level 1
+        _spawnSize = _currentLevel + _minSpawnSize - 1;
+        _spawnSize = _spawnSize > _maxSpawnSize ? _maxSpawnSize : _spawnSize;
+        _level = _currentLevel;
+        SetGameCountdown();
+    }
+
+    private void SetZenModeSpawnSize()
+    {
+        bool isNumber = int.TryParse(_spawnCountText.text, out _spawnSize);
+        if (!isNumber)
+        {
+            _spawnSize = _minSpawnSize;
+        }
+
+        SetGameCountdown();
     }
 
     private void ZenModePopUp()
@@ -339,6 +372,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOverScreen()
     {
+        PauseGame();
         if (!FTUEManager.Instance.GetBool(FTUE.FinishedTutorial) && SceneManager.GetActiveScene().name == BuildScene.FTUEScene.ToString())
         {
             FTUEManager.Instance.FinishedTutorialStart();
@@ -356,6 +390,7 @@ public class GameManager : MonoBehaviour
     }
     public void GameOverCallback()
     {
+        GameOver();
         Debug.Log($"GameOverCallback: {_gameMode}");
         if(_gameMode == GameMode.FTUE)
         {
@@ -417,7 +452,7 @@ public class GameManager : MonoBehaviour
     {
         var maximumLevel = 7;
         _nextLevelButton.SetActive(_levelmanager.GetLastLevel() < maximumLevel);
-        Debug.Log($"Can go to next level: Next level is{_levelmanager.GetLastLevel() + 1}");
+        Debug.Log($"Can go to next level: Next level is {_levelmanager.GetLastLevel() + 1}");
     }
 
     public void GoToNextLevel()
@@ -430,6 +465,7 @@ public class GameManager : MonoBehaviour
 
     public void SetCurrentLevel(int level)
     {
+        Debug.Log($"Current Level: {level}");
         _currentLevel = level;
     }
 

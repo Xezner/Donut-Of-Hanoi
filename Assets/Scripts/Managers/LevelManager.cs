@@ -82,24 +82,34 @@ public class LevelManager : MonoBehaviour
             Moves = moves,
             Time = time
         };
+        bool isDataExisting = false;
+
+        //Replace existing data
         if(_levelDataList != null && _levelDataList.Count > 0)
         {
             foreach(LevelData levelData in _levelDataList)
             {
                 if(levelData.Level == level)
                 {
+                    Debug.Log($"Replacing Data: {JsonConvert.SerializeObject(levelData)}");
                     levelData.Level = level;
                     levelData.Moves = levelData.Moves < moves ? levelData.Moves : moves;
                     levelData.Time = levelData.Time < time? levelData.Time : time;
+                    isDataExisting = true;
                     break;
                 }
             }
         }
-        else
+
+        //Adds new data
+        if(!isDataExisting)
         {
+            Debug.Log($"Adding: {JsonConvert.SerializeObject(levelCleared)}");
             _levelDataList.Add(levelCleared);
         }
-        Debug.Log($"Adding: {JsonConvert.SerializeObject(levelCleared)}");
+
+        Debug.Log($"Newly modifiedt list: {JsonConvert.SerializeObject(_levelDataList)}");
+
         SetLevelData(_levelDataList);
     }
 
@@ -127,11 +137,13 @@ public class LevelManager : MonoBehaviour
                 Debug.Log($"GameOver Getting All Level Data: {JsonConvert.SerializeObject(levelData)}");
                 if(levelData.Level == level)
                 {
+                    Debug.Log($"Data get, returning existing data");
                     return levelData;
                 }
             }
         }
 
+        Debug.Log($"No Data get, returning default data 0,0,0");
         return new() 
         { 
             Level = 0,
