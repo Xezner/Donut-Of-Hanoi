@@ -12,13 +12,18 @@ public class InteractionManager : MonoBehaviour
     private GameObject _poppedDisk;
     private DiskObject _poppedDiskObject;
 
+    public static InteractionManager Instance;
+
+    public event EventHandler OnDiskPickUp;
+    public event EventHandler OnDiskPlaceDown;
+
     public event EventHandler<OnDiskStackChangeEventArgs> OnDiskStackChange;
     public class OnDiskStackChangeEventArgs : EventArgs
     {
         public DiskObject DiskObject;
     }
 
-    public static InteractionManager Instance;
+    
     private void Awake()
     {
         if (Instance == null)
@@ -56,6 +61,7 @@ public class InteractionManager : MonoBehaviour
         }
         _poppedDiskObject = _poppedDisk.GetComponent<DiskObject>();
         SetDiskToPlayer();
+        OnDiskPickUp?.Invoke(this, EventArgs.Empty);
     }
 
     //Places the disk back on the counter if a disk is being held
@@ -77,6 +83,7 @@ public class InteractionManager : MonoBehaviour
         diskHolder.PushDisk(_poppedDisk);
         _poppedDisk = null;
 
+        OnDiskPlaceDown?.Invoke(this, EventArgs.Empty);
         InvokeEvent();
     }
 
@@ -105,5 +112,17 @@ public class InteractionManager : MonoBehaviour
         {
             DiskObject = _poppedDiskObject
         });
+    }
+
+    private void OnEnable()
+    {
+        Debug.Log("Subscribing to audio manager");
+        AudioManager.Instance.SubscribeToInteractionSound();
+    }
+
+    private void OnDisable()
+    {
+        Debug.Log("Unsubscribing to audio manager");
+        AudioManager.Instance.UnsubscribeToInteractionSound();
     }
 }

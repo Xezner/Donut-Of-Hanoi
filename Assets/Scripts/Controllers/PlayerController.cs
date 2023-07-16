@@ -215,6 +215,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+
+    private void OnEnable()
+    {
+        AudioManager.Instance.SetPlayerController();
+    }
+
+    private void OnDisable()
+    {
+        AudioManager.Instance.ResetPlayerController();
+    }
+
     private struct PlayerData
     {
         public Vector3 PlayerPosition;
