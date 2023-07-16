@@ -8,16 +8,19 @@ public class BuildSceneManager : MonoBehaviour
     public static BuildSceneManager Instance;
     private void Awake()
     {
-        if(Instance == null)
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
+            Destroy(gameObject);
+            return;
         }
+        Instance = this;
         DontDestroyOnLoad(this.gameObject);
     }
 
     public void LoadSceneAsync(BuildScene buildScene)
     {
-        SceneManager.LoadSceneAsync((int)buildScene);
+        Debug.Log("LOADING SCENE");
+        SceneManager.LoadSceneAsync((int)buildScene, LoadSceneMode.Single);
     }
 }
 

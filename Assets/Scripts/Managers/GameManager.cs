@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     //CHEAT
     public bool ResetFTUE = false;
 
+    [Header("UI MainMenu")]
+    [SerializeField] private GameObject _mainMenuUI;
 
     [Header("UI Prompts")]
     [SerializeField] private GameObject _successUI;
@@ -23,13 +25,24 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _zenModePopUp;
     [SerializeField] private TMP_InputField _spawnCountText;
 
+    [Header("Level Manager")]
+    [SerializeField] private LevelManager _levelmanager;
 
+    //GameMode
     private GameMode _gameMode;
+
+    //Spawn Data
     private int _spawnSize = 3;
     private int _minSpawnSize = 3;
     private int _maxSpawnSize = 9;
+
+    //Countdown Data
     private float _countdownTimer = 3f;
     private float _countdown = 3f;
+
+    //LevelData
+    public int Moves;
+    public float TimeSpent;
 
     //States
     public bool IsCountdownStarted = false;
@@ -40,10 +53,13 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     private void Awake()
     {
-        if (Instance == null)
+        Debug.Log("AWAKE");
+        if(Instance != null && Instance !=this)
         {
-            Instance = this;
+            Destroy(gameObject);
+            return;
         }
+        Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
@@ -53,10 +69,25 @@ public class GameManager : MonoBehaviour
         {
             FTUEManager.Instance.ClearPlayerPrefs();
         }
-
-        SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
+        Debug.Log("START");
+        SceneManager.sceneLoaded += SceneManager_sceneLoaded;
     }
 
+    private void SceneManager_sceneLoaded(Scene loadedScene, LoadSceneMode arg1)
+    {
+        if(loadedScene.name == BuildScene.MainMenuScene.ToString())
+        {
+            ResetGame();
+        }
+        else if (loadedScene.name == BuildScene.GameScene.ToString())
+        {
+            InitGameStart();
+        }
+        else if (loadedScene.name == BuildScene.FTUEScene.ToString())
+        {
+            InitFTUEStart();
+        }
+    }
     private void Update()
     {
         if(IsCountdownStarted && _gameMode != GameMode.FTUE)
@@ -67,14 +98,12 @@ public class GameManager : MonoBehaviour
                 IsCountdownStarted = false;
                 Debug.Log("GAME STARTING");
                 DiskSpawnManager.Instance.SpawnDisks(_spawnSize);
-
                 UnPauseGame();
             }
         }
 
         if(_spawnCountText.isActiveAndEnabled)
         {
-            Debug.Log("HERE");
             bool isNumber = int.TryParse(_spawnCountText.text, out int spawnCount);
             if(spawnCount < _minSpawnSize|| !isNumber)
             {
@@ -87,23 +116,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void SceneManager_activeSceneChanged(Scene previousScene, Scene loadedScene)
+    private void ResetGame()
     {
-        if(loadedScene.name == BuildScene.MainMenuScene.ToString())
-        {
-            PauseGame();
-        }
-        if (loadedScene.name == BuildScene.GameScene.ToString())
-        {
-            InitGameStart();
-        }
-        if(loadedScene.name == BuildScene.FTUEScene.ToString())
-        {
-            InitFTUEStart();
-        }
+        Debug.Log("Reset");
+        _mainMenuUI.SetActive(true);
+        _successUI.SetActive(false);
+        _errorPrompt.gameObject.SetActive(false);
+
+        PauseGame();
     }
+
     private void InitGameStart()
     {
+        Debug.Log("Init game start");
+        Moves = 0;
+        TimeSpent = 0f;
         _errorPrompt.gameObject.SetActive(true);
         _errorPrompt.GetPlayer();
         _worldSpaceCanvas.worldCamera = Camera.main;
@@ -117,7 +144,9 @@ public class GameManager : MonoBehaviour
         {
             case GameMode.Standard:
             {
-                _spawnSize = FTUEManager.Instance.GetInt(FTUE.Level);
+                //if Last level was 0 (no games yet) set to min spawn size
+                //if last level was 6 (current level is last level) set to 6 + min spawn size = 9
+                _spawnSize = _levelmanager.GetLastLevel() + _minSpawnSize;
                 _spawnSize = _spawnSize > _maxSpawnSize ? _maxSpawnSize : _spawnSize;
                 SetGameCountdown();
                 break;
@@ -179,12 +208,14 @@ public class GameManager : MonoBehaviour
 
     public void PauseGame()
     {
+        Debug.Log("Pausing Game");
         IsGamePaused = true;
         IsPlayerControllable = false;
     }
 
     public void UnPauseGame()
     {
+        Debug.Log("Unpausing Game");
         IsGamePaused = false;
         IsPlayerControllable = true;
     }
@@ -207,7 +238,29 @@ public class GameManager : MonoBehaviour
         {
             FTUEManager.Instance.FinishedTutorialStart();
         }
+        else if (_gameMode == GameMode.Standard)
+        {
+            TimeSpent = 0;
+            _levelmanager.SetLevelClearData(Moves, TimeSpent);
+            ReturnToMainMenu();
+            GoToNextLevel();
+        }
     }
+
+    public void ReturnToMainMenu()
+    {
+        ResetGame();
+        BuildSceneManager.Instance.LoadSceneAsync(BuildScene.MainMenuScene);
+    }
+
+    public void GoToNextLevel()
+    {
+        if(_levelmanager.GetLastLevel() < (_maxSpawnSize - _minSpawnSize))
+        {
+            Debug.Log($"Can go to next level: Next level is{ _levelmanager.GetLastLevel()+1}");
+        }
+    }
+
 
     public void ErrorPrompt(ErrorType errorType)
     {
