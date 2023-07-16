@@ -61,6 +61,7 @@ public class DiskSpawnManager : MonoBehaviour
 
     public void SpawnDisks(int spawnSize = 9)
     {
+        Debug.Log("Disks are being spawned.");
         SetSpawnSize(spawnSize);
 
         bool initialSpawn = true;

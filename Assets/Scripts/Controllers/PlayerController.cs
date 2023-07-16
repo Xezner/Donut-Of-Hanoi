@@ -40,10 +40,12 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        if(Instance == null)
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
+            Destroy(gameObject);
+            return;
         }
+        Instance = this;
     }
 
     private void Start()
@@ -77,7 +79,7 @@ public class PlayerController : MonoBehaviour
     //Event function that runs the method InteractOncounter from interactionmanager
     private void Instance_OnInteractAction(object sender, System.EventArgs e)
     {
-        if(GameManager.Instance.IsGamePaused)
+        if(GameManager.Instance.IsGamePaused && !GameManager.Instance.IsPlayerControllable)
         {
             return;
         }

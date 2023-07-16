@@ -14,10 +14,12 @@ public class GameInput : MonoBehaviour
     public static GameInput Instance;
     private void Awake()
     {
-        if(Instance == null)
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
+            Destroy(gameObject);
+            return;
         }
+        Instance = this;
 
         //enables the player input system
         _inputSystem = new();
@@ -44,6 +46,7 @@ public class GameInput : MonoBehaviour
     //Even system for pause button (ESC)
     private void Pause_performed(InputAction.CallbackContext obj)
     {
+        Debug.Log("Pause_performed");
         if(SceneManager.GetActiveScene().name == BuildScene.MainMenuScene.ToString())
         {
             return;

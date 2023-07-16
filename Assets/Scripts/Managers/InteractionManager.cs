@@ -100,6 +100,7 @@ public class InteractionManager : MonoBehaviour
     //Invoke the on disk stack change event
     private void InvokeEvent()
     {
+        GameManager.Instance.Moves++;
         OnDiskStackChange?.Invoke(this, new OnDiskStackChangeEventArgs
         {
             DiskObject = _poppedDiskObject
