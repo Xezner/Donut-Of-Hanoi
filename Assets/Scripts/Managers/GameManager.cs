@@ -6,7 +6,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
+using Button = UnityEngine.UI.Button;
 
 public class GameManager : MonoBehaviour
 {
@@ -52,6 +54,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _pauseUI;
     [SerializeField] private GameObject _pauseButton;
     [SerializeField] private GameObject _resumeButton;
+
+    [Header("UI Options")]
+    [SerializeField] private GameObject _optionsUI;
+    [SerializeField] private Button _optionsExitButton;
 
     [Header("UI Countdown")]
     [SerializeField] private GameObject _countDownUI;
@@ -186,6 +192,33 @@ public class GameManager : MonoBehaviour
         _tutorialButton.SetActive(!isTutorialFinished);
         _startButton.SetActive(isTutorialFinished);
         _zenModeButton.SetActive(isTutorialFinished);
+    }
+
+    public void UpdateOptionsExitButton(bool isMainMenu)
+    {
+        _optionsExitButton.onClick.RemoveAllListeners();
+        if(isMainMenu)
+        {
+            _optionsExitButton.onClick.RemoveAllListeners();
+            _optionsExitButton.onClick.AddListener(
+            () =>
+            {
+                _optionsUI.SetActive(false);
+                _mainMenuUI.SetActive(true);
+                AudioManager.Instance.UpdateStoredVolume();
+            });
+        }
+        else
+        {
+            _optionsExitButton.onClick.RemoveAllListeners();
+            _optionsExitButton.onClick.AddListener(
+            () =>
+            {
+                _optionsUI.SetActive(false);
+                _pauseUI.SetActive(true);
+                AudioManager.Instance.UpdateStoredVolume();
+            });
+        }
     }
 
     private void SetGameCountdown()

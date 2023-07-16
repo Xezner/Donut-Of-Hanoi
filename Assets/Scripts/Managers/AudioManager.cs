@@ -1,11 +1,21 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
 {
+    [Header("Slider")]
+    [SerializeField] private Slider _bgmSlider;
+    [SerializeField] private Slider _sfxSlider;
+
     [Header("Audio Source")]
-    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private float _sfxVolume = 1f;
+    [SerializeField] private float _bgmVolume = 1f;
+    private float _defaultbgmVolume = 0.05f;
+
 
     [Header("Pick up and place sounds")]
     [SerializeField] private AudioClip[] _pickUp;
@@ -42,13 +52,14 @@ public class AudioManager : MonoBehaviour
     private void Start()
     {
         Debug.Log("Audio manager start.");
+        GetStoredVolume();
         GameManager.Instance.OnSuccessPrompt += Instance_OnSuccessPrompt;
         GameManager.Instance.OnErrorPrompt += Instance_OnErrorPrompt;
     }
 
     private void Update()
     {
-        if(_playerController != null && _playerController.IsMoving() && GameManager.Instance.IsPlayerControllable)
+        if (_playerController != null && _playerController.IsMoving() && GameManager.Instance.IsPlayerControllable)
         {
             PlayFootSteps();
         }
@@ -62,10 +73,58 @@ public class AudioManager : MonoBehaviour
                 beepTimer = 0f;
             }
         }
-        else if(beepTimer != beepDuration)
+        else if (beepTimer != beepDuration)
         {
             beepTimer = beepDuration;
         }
+    }
+
+    public void GetStoredVolume()
+    {
+        string audioDataJSON = FTUEManager.Instance.GetString(FTUE.AudioData);
+        Debug.Log($"Stored Audio Data: {audioDataJSON}");
+        if(string.IsNullOrWhiteSpace(audioDataJSON))
+        {
+            _bgmVolume = 1;
+            _sfxVolume = 1;
+            UpdateStoredVolume();
+        }
+        else
+        {
+            AudioData audioData = JsonConvert.DeserializeObject<AudioData>(audioDataJSON);
+            _bgmVolume = audioData.BGMVolume;
+            _sfxVolume = audioData.SFXVolume;
+        }
+        _audioSource.volume = _defaultbgmVolume * _bgmVolume;
+    }
+
+    public void UpdateSFXVolume()
+    {
+        _sfxVolume = _sfxSlider.value;
+    }
+
+    public void UpdateBGMVolume()
+    {
+        _bgmVolume = _bgmSlider.value;
+        _audioSource.volume = _defaultbgmVolume * _bgmVolume;
+    }
+
+    public void UpdateSliderValues()
+    {
+        _bgmSlider.value = _bgmVolume;
+        _sfxSlider.value = _sfxVolume;
+    }
+
+    public void UpdateStoredVolume()
+    {
+        AudioData audioData = new()
+        {
+            BGMVolume = _bgmVolume,
+            SFXVolume = _sfxVolume
+        };
+        string audioDataJSON = JsonConvert.SerializeObject(audioData);
+        Debug.Log($"Updating Audio Data: {audioDataJSON}");
+        FTUEManager.Instance.SetString(FTUE.AudioData, audioDataJSON);
     }
 
     public void SubscribeToInteractionSound()
@@ -122,10 +181,16 @@ public class AudioManager : MonoBehaviour
 
     private void PlaySound(AudioClip audioClip, Vector3 position, float volume = 1f)
     {
-        AudioSource.PlayClipAtPoint(audioClip, position, volume);
+        AudioSource.PlayClipAtPoint(audioClip, position, volume * _sfxVolume);
     }
     private void PlaySound(AudioClip[] audioClipArray, Vector3 position, float volume = 1f)
     {
         PlaySound(audioClipArray[Random.Range(0, audioClipArray.Length)], position, volume);
     }
+}
+
+public class AudioData
+{
+    public float BGMVolume;
+    public float SFXVolume;
 }
