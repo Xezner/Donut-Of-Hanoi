@@ -28,6 +28,8 @@ public class GameInput : MonoBehaviour
         //setting up the event system for the interact button
         _inputSystem.Player.Interact.performed += Interact_performed; ;
         _inputSystem.Player.Pause.performed += Pause_performed;
+
+        DontDestroyOnLoad(gameObject);
     }
 
    

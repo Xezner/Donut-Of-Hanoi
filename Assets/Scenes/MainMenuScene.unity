@@ -559,6 +559,11 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 599669026}
+    - target: {fileID: 3064992997572043165, guid: da3758ad16eba7647b0721f09f8f0c29,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3633369877548012636, guid: da3758ad16eba7647b0721f09f8f0c29,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -639,21 +644,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5467573728393834525, guid: da3758ad16eba7647b0721f09f8f0c29,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5467573728393834525, guid: da3758ad16eba7647b0721f09f8f0c29,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ReturnToMainMenu
-      objectReference: {fileID: 0}
-    - target: {fileID: 5467573728393834525, guid: da3758ad16eba7647b0721f09f8f0c29,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: GameManager, Assembly-CSharp
-      objectReference: {fileID: 0}
     - target: {fileID: 5632576614869458352, guid: da3758ad16eba7647b0721f09f8f0c29,
         type: 3}
       propertyPath: m_Camera
@@ -679,6 +669,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7288074980849484003, guid: da3758ad16eba7647b0721f09f8f0c29,
+        type: 3}
+      propertyPath: _levelText
+      value: 
+      objectReference: {fileID: 1179372953}
     - target: {fileID: 7288074980849484003, guid: da3758ad16eba7647b0721f09f8f0c29,
         type: 3}
       propertyPath: _levelmanager
@@ -714,6 +709,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: da3758ad16eba7647b0721f09f8f0c29, type: 3}
+--- !u!114 &1179372953 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2225232243390304555, guid: da3758ad16eba7647b0721f09f8f0c29,
+    type: 3}
+  m_PrefabInstance: {fileID: 1069863600}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1292885697
 PrefabInstance:
   m_ObjectHideFlags: 0
