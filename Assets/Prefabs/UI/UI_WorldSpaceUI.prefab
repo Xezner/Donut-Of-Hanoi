@@ -1336,6 +1336,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5358443529878384142}
   - component: {fileID: 1351076097592555079}
+  - component: {fileID: 824058414535638341}
   m_Layer: 5
   m_Name: GO_SuccessPromptUI
   m_TagString: Untagged
@@ -1387,6 +1388,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &824058414535638341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8722584762243368108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27dfa2c5dcd46a048a1ad2924d1bd15b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9038194456566832520
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +14,9 @@ public class GameManager : MonoBehaviour
 
     [Header("UI MainMenu")]
     [SerializeField] private GameObject _mainMenuUI;
+    [SerializeField] private GameObject _tutorialButton;
+    [SerializeField] private GameObject _startButton;
+    [SerializeField] private GameObject _zenModeButton;
 
     [Header("UI Prompts")]
     [SerializeField] private GameObject _successUI;
@@ -33,9 +37,25 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _moveText;
     [SerializeField] private TextMeshProUGUI _timerText;
     [SerializeField] private TextMeshProUGUI _levelText;
+
+    [Header("UI Game Over")]
+    [SerializeField] private GameObject _gameOverUI;
+    [SerializeField] private TextMeshProUGUI _gameOverMoveText;
+    [SerializeField] private GameObject _movePersonalBest;
+    [SerializeField] private TextMeshProUGUI _gameOverTimeText;
+    [SerializeField] private GameObject _timePersonalBest;
+    [SerializeField] private TextMeshProUGUI _gameOverLevelText;
+    [SerializeField] private GameObject _nextLevelButton;
+
+
+    [Header("UI Pause")]
+    [SerializeField] private GameObject _pauseUI;
+    [SerializeField] private GameObject _pauseButton;
+    [SerializeField] private GameObject _resumeButton;
+
     //GameMode
     private GameMode _gameMode;
-
+    private int _currentLevel = 1;
     //Spawn Data
     private int _spawnSize = 3;
     private int _minSpawnSize = 3;
@@ -55,12 +75,12 @@ public class GameManager : MonoBehaviour
     public bool IsGamePaused = true;
     public bool IsPlayerControllable = true;
     public bool IsGameStarted = false;
-
+    public bool IsPausedByUI = false;
     public static GameManager Instance;
     private void Awake()
     {
         Debug.Log("AWAKE");
-        if(Instance != null && Instance !=this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
@@ -71,22 +91,27 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        if(ResetFTUE)
+        if (ResetFTUE)
         {
             FTUEManager.Instance.ClearPlayerPrefs();
         }
         Debug.Log("START");
+        InitMenuButtons();
         SceneManager.sceneLoaded += SceneManager_sceneLoaded;
     }
 
+
+
     private void SceneManager_sceneLoaded(Scene loadedScene, LoadSceneMode arg1)
     {
-        if(loadedScene.name == BuildScene.MainMenuScene.ToString())
+        if (loadedScene.name == BuildScene.MainMenuScene.ToString())
         {
+            InitMenuButtons();
             ResetGame();
         }
         else if (loadedScene.name == BuildScene.GameScene.ToString())
         {
+            _levelmanager.GetLevelDataList();
             InitGameStart();
         }
         else if (loadedScene.name == BuildScene.FTUEScene.ToString())
@@ -100,9 +125,16 @@ public class GameManager : MonoBehaviour
         StartTimer();
         ZenModePopUp();
     }
-
+    private void InitMenuButtons()
+    {
+        bool isTutorialFinished = FTUEManager.Instance.GetBool(FTUE.FinishedTutorial);
+        _tutorialButton.SetActive(!isTutorialFinished);
+        _startButton.SetActive(isTutorialFinished);
+        _zenModeButton.SetActive(isTutorialFinished);
+    }
     private void SetGameCountdown()
     {
+        PauseGame();
         _countdown = _countdownTimer;
         IsCountdownStarted = true;
     }
@@ -160,12 +192,15 @@ public class GameManager : MonoBehaviour
 
     private void SetLevelText()
     {
-        _levelText.text = $"Level {_level}";
+        bool isZenMode = _gameMode == GameMode.ZenMode;
+        string levelString = isZenMode ? "ZEN" : _level.ToString();
+        _levelText.text = $"Level {levelString}";
     }
 
     private void InitGameStart()
     {
         Debug.Log("Init game start");
+        PauseGame();
         Moves = 0;
         TimeSpent = 0f;
         _errorPrompt.gameObject.SetActive(true);
@@ -177,37 +212,46 @@ public class GameManager : MonoBehaviour
 
     private void GetSpawnSizeByGameMode()
     {
-        switch(_gameMode)
+        switch (_gameMode)
         {
             case GameMode.Standard:
-            {
-                //if Last level was 0 (no games yet) set to min spawn size
-                //if last level was 6 (current level is last level) set to 6 + min spawn size = 9
-                _spawnSize = _levelmanager.GetLastLevel() + _minSpawnSize;
-                _spawnSize = _spawnSize > _maxSpawnSize ? _maxSpawnSize : _spawnSize;
-                _level = _levelmanager.GetLastLevel() + 1;
-                SetGameCountdown();
-                break;
-            }
+                {
+                    //spawnSize = currentLevel + Minspawnsize (3) - 1 to get minimum of 3 level at level 1
+                    _spawnSize = _currentLevel + _minSpawnSize - 1;
+                    _spawnSize = _spawnSize > _maxSpawnSize ? _maxSpawnSize : _spawnSize;
+                    _level = _currentLevel;
+                    SetGameCountdown();
+                    break;
+                }
             case GameMode.ZenMode:
-            {
-                int.TryParse(_spawnCountText.text, out _spawnSize);
-                SetGameCountdown();
-                break;
-            }
+                {
+                    bool isNumber = int.TryParse(_spawnCountText.text, out _spawnSize);
+                    if(!isNumber)
+                    {
+                        _spawnSize = _minSpawnSize;
+                    }
+
+                    SetGameCountdown();
+                    break;
+                }
             default: break;
         }
     }
 
     private void ZenModePopUp()
     {
-        if(_gameMode != GameMode.ZenMode)
+        if (_gameMode != GameMode.ZenMode)
         {
             return;
         }
 
         if (_spawnCountText.isActiveAndEnabled)
         {
+            if(string.IsNullOrWhiteSpace(_spawnCountText.text))
+            {
+                return;
+            }
+
             bool isNumber = int.TryParse(_spawnCountText.text, out int spawnCount);
             if (spawnCount < _minSpawnSize || !isNumber)
             {
@@ -251,6 +295,7 @@ public class GameManager : MonoBehaviour
         IsPlayerControllable = false;
         if (!FTUEManager.Instance.GetBool(FTUE.FinishedTutorial))
         {
+            _gameMode = GameMode.FTUE;
             BuildSceneManager.Instance.LoadSceneAsync(BuildScene.FTUEScene);
         }
         else
@@ -264,6 +309,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Pausing Game");
         IsGamePaused = true;
         IsPlayerControllable = false;
+        IsPausedByUI = true;
     }
 
     public void UnPauseGame()
@@ -271,12 +317,18 @@ public class GameManager : MonoBehaviour
         Debug.Log("Unpausing Game");
         IsGamePaused = false;
         IsPlayerControllable = true;
+        IsPausedByUI = false;
     }
 
     public void PauseGameToggle()
     {
         IsGamePaused = !IsGamePaused;
         IsPlayerControllable = !IsPlayerControllable;
+
+        _pauseButton.SetActive(!IsGamePaused);
+        _pauseUI.SetActive(IsGamePaused);
+        _resumeButton.SetActive(IsGamePaused);
+
         Debug.Log($"Game Paused: {IsGamePaused}");
     }
 
@@ -294,9 +346,6 @@ public class GameManager : MonoBehaviour
         else if (_gameMode == GameMode.Standard)
         {
             GameOver();
-            _levelmanager.SetLevelClearData(Moves, TimeSpent);
-            ReturnToMainMenu();
-            GoToNextLevel();
         }
     }
 
@@ -305,17 +354,54 @@ public class GameManager : MonoBehaviour
         IsGameStarted = false;
         _gameUI.SetActive(false);
     }
-
     public void GameOverCallback()
     {
-        //add the call back on the finished baking popup
+        Debug.Log($"GameOverCallback: {_gameMode}");
+        if(_gameMode == GameMode.FTUE)
+        {
+            return;
+        }
+
+        _gameOverUI.SetActive(true);
+
+        bool isZenMode = _gameMode == GameMode.ZenMode;
+        SetGameOverLevelUI(_levelmanager.GetLevelData(_currentLevel), isZenMode);
+        _levelText.gameObject.SetActive(!isZenMode);
+        _nextLevelButton.SetActive(!isZenMode);
+
+        if (_gameMode == GameMode.Standard)
+        {
+            _levelmanager.SetLevelClearData(_currentLevel, Moves, TimeSpent);
+            CheckForNextLevel();
+        }
     }
 
-    private void ResetGame()
+    private void SetGameOverLevelUI(LevelData currentLevelData, bool isZenMode)
+    {
+        Debug.Log("GameOver Current Level: " + JsonConvert.SerializeObject(currentLevelData));
+        TimeSpan timeSpan = TimeSpan.FromSeconds(TimeSpent);
+        string formattedTime = string.Format("{0:mm\\:ss}", timeSpan);
+        _gameOverTimeText.text = $"Time: {formattedTime}";
+        
+        _gameOverMoveText.text = $"Moves: {Moves}";
+
+        _gameOverLevelText.gameObject.SetActive(!isZenMode);
+        _gameOverLevelText.text = $"Level {_currentLevel}";
+
+        if (!isZenMode)
+        {
+            bool isPersonalBestMove = currentLevelData.Moves == 0 || Moves < currentLevelData.Moves;
+            _movePersonalBest.SetActive(isPersonalBestMove);
+
+            bool isPersonalBestTime = currentLevelData.Time == 0 || TimeSpent < currentLevelData.Time;
+            _timePersonalBest.SetActive(isPersonalBestTime);
+        }
+    }
+    public void ResetGame(bool isNextLevel = true)
     {
         Debug.Log("Reset");
         _gameUI.SetActive(false);
-        _mainMenuUI.SetActive(true);
+        _mainMenuUI.SetActive(isNextLevel);
         _successUI.SetActive(false);
         _errorPrompt.gameObject.SetActive(false);
 
@@ -324,19 +410,28 @@ public class GameManager : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
-        ResetGame();
         BuildSceneManager.Instance.LoadSceneAsync(BuildScene.MainMenuScene);
+    }
+
+    private void CheckForNextLevel()
+    {
+        var maximumLevel = 7;
+        _nextLevelButton.SetActive(_levelmanager.GetLastLevel() < maximumLevel);
+        Debug.Log($"Can go to next level: Next level is{_levelmanager.GetLastLevel() + 1}");
     }
 
     public void GoToNextLevel()
     {
-        var maximumLevel = _maxSpawnSize - _minSpawnSize - 1;
-        if(_levelmanager.GetLastLevel() < maximumLevel)
-        {
-            Debug.Log($"Can go to next level: Next level is{ _levelmanager.GetLastLevel()+1}");
-        }
+        _currentLevel++;
+        ResetGame(false);
+        StartGame();
+            
     }
 
+    public void SetCurrentLevel(int level)
+    {
+        _currentLevel = level;
+    }
 
     public void ErrorPrompt(ErrorType errorType)
     {
@@ -350,8 +445,6 @@ public class GameManager : MonoBehaviour
         _successUI.transform.position = position + offset;
         _successUI.SetActive(true);
     }
-
-    
 }
 
 public enum GameMode

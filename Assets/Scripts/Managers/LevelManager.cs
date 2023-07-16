@@ -8,45 +8,31 @@ using UnityEngine;
 public class LevelManager : MonoBehaviour
 {
     private List<LevelData> _levelDataList = new();
+    private int _currentLevel = 0;
 
+    private LevelManager Instance;
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
     public void SetLevelData(List<LevelData> levelData)
     {
-        //levelData.Add(new()
-        //{
-        //    Level = 1,
-        //    Moves = 10,
-        //    Time = 10.5f
-        //});
-
-        //levelData.Add(new()
-        //{
-        //    Level = 2,
-        //    Moves = 20,
-        //    Time = 11.5f
-        //});
-
-        //levelData.Add(new()
-        //{
-        //    Level = 3,
-        //    Moves = 50,
-        //    Time = 23.5f
-        //});
-
-        //levelData.Clear();
         string levelDataJSON = JsonConvert.SerializeObject(levelData);
-        Debug.Log(levelDataJSON);
+        Debug.Log($"Setting Level Data List: {levelDataJSON}");
         FTUEManager.Instance.SetString(FTUE.LevelData, levelDataJSON);
     }
 
     public List<LevelData> GetLevelDataList()
     {
         string levelDataJSON = FTUEManager.Instance.GetString(FTUE.LevelData);
-        Debug.Log($"{levelDataJSON}");
+        Debug.Log($"Getting level Data List: {levelDataJSON}");
 
         List<LevelData> levelData = JsonConvert.DeserializeObject<List<LevelData>>(levelDataJSON);
         if (levelData != null && levelData.Count > 0)
@@ -88,16 +74,41 @@ public class LevelManager : MonoBehaviour
         };
     }
 
-    public void DisplayStuff()
-    {
-        Debug.Log(GetLastLevel());
-    }
-
-    public void SetLevelClearData(int moves, float time)
+    public void SetLevelClearData(int level, int moves, float time)
     {
         LevelData levelCleared = new()
         {
-            Level = GetLastLevel() + 1,
+            Level = level,
+            Moves = moves,
+            Time = time
+        };
+        if(_levelDataList != null && _levelDataList.Count > 0)
+        {
+            foreach(LevelData levelData in _levelDataList)
+            {
+                if(levelData.Level == level)
+                {
+                    levelData.Level = level;
+                    levelData.Moves = levelData.Moves < moves ? levelData.Moves : moves;
+                    levelData.Time = levelData.Time < time? levelData.Time : time;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            _levelDataList.Add(levelCleared);
+        }
+        Debug.Log($"Adding: {JsonConvert.SerializeObject(levelCleared)}");
+        SetLevelData(_levelDataList);
+    }
+
+    public void SetLastLevelClearData(int moves, float time)
+    {
+        _currentLevel = GetLastLevel() + 1;
+        LevelData levelCleared = new()
+        {
+            Level = _currentLevel,
             Moves = moves,
             Time = time
         };
@@ -107,10 +118,39 @@ public class LevelManager : MonoBehaviour
         SetLevelData(_levelDataList);
     }
 
+    public LevelData GetLevelData(int level)
+    {
+        if (_levelDataList != null && _levelDataList.Count > 0)
+        { 
+            foreach (LevelData levelData in _levelDataList)
+            {
+                Debug.Log($"GameOver Getting All Level Data: {JsonConvert.SerializeObject(levelData)}");
+                if(levelData.Level == level)
+                {
+                    return levelData;
+                }
+            }
+        }
+
+        return new() 
+        { 
+            Level = 0,
+            Moves = 0,
+            Time = 0
+        };
+    }
+
     public void ClearLevelData()
     {
         SetLevelData(new());
     }
+
+
+    public void DisplayStuff()
+    {
+        Debug.Log(GetLastLevel());
+    }
+
 }
 [Serializable]
 public class LevelData
