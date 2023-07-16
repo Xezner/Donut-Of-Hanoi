@@ -204,5 +204,6 @@ public enum FTUE
     FirstErrorPrompt,
     FinishedTutorial,
     Level,
-    LevelData
+    LevelData,
+    AudioData
 }
