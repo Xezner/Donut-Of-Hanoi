@@ -40,10 +40,6 @@ public class CounterObject : MonoBehaviour
 
             GameManager.Instance.GameOverScreen();
         }
-        else
-        {
-            Debug.Log("Stack is not equal. Keep Trying");
-        }
     }
 
     public DiskHolder GetDiskHolder()
