@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7229079043212312818
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 152288028330005638}
+  - component: {fileID: 1021746239944564734}
+  m_Layer: 0
+  m_Name: MANAGER_DiskSpawnManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &152288028330005638
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7229079043212312818}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.1009554, y: 1.556664, z: -3.3863835}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1021746239944564734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7229079043212312818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cdaa56c2a91ec4ab5bad993f4a6a84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spawnPosition: {fileID: 0}
+  _spawnDiskHolder: {fileID: 0}
+  _initialSpawnHeight: 0.1
+  _spawnOffsetHeight: 0.3
+  _spawnSize: 3
+  _diskDataList:
+  - {fileID: 11400000, guid: 4d2a7700906b8fa428466a00da691d54, type: 2}
+  - {fileID: 11400000, guid: ceeabb6dfa8cb5c4cbbfc30e52076c2c, type: 2}
+  - {fileID: 11400000, guid: 6eae9175d73a0834c96140214d7ba710, type: 2}
+  - {fileID: 11400000, guid: 28d1f941033899242bd3170095eee938, type: 2}
+  - {fileID: 11400000, guid: 7637daf13dbe5a145ab6ad1f0d2542b6, type: 2}
+  - {fileID: 11400000, guid: d3de85d909ad45f46b817babcce97019, type: 2}
+  - {fileID: 11400000, guid: 431d17b0dcdcd0449a5e7839608d0dc5, type: 2}
+  - {fileID: 11400000, guid: 04aaf4d0757e861409ee2342764f718b, type: 2}
+  - {fileID: 11400000, guid: 3fd44ca51b0c068418e2603ba9302b70, type: 2}
+  _spawnList: []
