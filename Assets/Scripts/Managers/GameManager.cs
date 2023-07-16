@@ -82,6 +82,12 @@ public class GameManager : MonoBehaviour
     public bool IsGameStarted = false;
     public bool IsPausedByUI = false;
 
+
+    //Event for sound
+    public event EventHandler OnSuccessPrompt;
+    public event EventHandler OnErrorPrompt
+        ;
+
     //Singleton
     public static GameManager Instance;
     private void Awake()
@@ -373,6 +379,7 @@ public class GameManager : MonoBehaviour
     public void GameOverScreen()
     {
         PauseGame();
+
         if (!FTUEManager.Instance.GetBool(FTUE.FinishedTutorial) && SceneManager.GetActiveScene().name == BuildScene.FTUEScene.ToString())
         {
             FTUEManager.Instance.FinishedTutorialStart();
@@ -471,11 +478,18 @@ public class GameManager : MonoBehaviour
 
     public void ErrorPrompt(ErrorType errorType)
     {
+        //playsound
+        OnErrorPrompt?.Invoke(this, EventArgs.Empty);
+
         _errorPrompt.ErrorPrompt(errorType);
+        
     }
 
     public void SuccessPrompt(Vector3 position)
     {
+        //Play sound
+        OnSuccessPrompt?.Invoke(this, EventArgs.Empty);
+
         Vector3 offset = new(0, 3f, 1f);
         _successUI.SetActive(false);
         _successUI.transform.position = position + offset;
