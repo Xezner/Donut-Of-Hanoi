@@ -49,7 +49,7 @@ public class GameInput : MonoBehaviour
     private void Pause_performed(InputAction.CallbackContext obj)
     {
         Debug.Log("Pause_performed");
-        if(SceneManager.GetActiveScene().name == BuildScene.MainMenuScene.ToString() || GameManager.Instance.IsPausedByUI)
+        if(SceneManager.GetActiveScene().name == BuildScene.MainMenuScene.ToString() || GameManager.Instance.IsPausedByUI || SceneManager.GetActiveScene().name == BuildScene.FTUEScene.ToString())
         {
             return;
         }
