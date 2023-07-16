@@ -143,6 +143,7 @@ public class FTUEManager : MonoBehaviour
 
     public void FinishedTutorialCallback()
     {
+        Debug.Log("HELLO");
         UnpauseAndUpdateFTUE(FTUE.FinishedTutorial);
         BuildSceneManager.Instance.LoadSceneAsync(BuildScene.MainMenuScene);
     }
