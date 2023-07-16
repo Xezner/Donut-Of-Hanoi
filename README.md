@@ -1,6 +1,6 @@
 # Donut-Of-Hanoi
 
-Tower of Hanoi game inspired by Overcooked and CodeMonkey
+Donut Themed: Tower of Hanoi game inspired by Overcooked and CodeMonkey
  
  
  
