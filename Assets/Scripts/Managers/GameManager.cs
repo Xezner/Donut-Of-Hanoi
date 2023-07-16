@@ -28,6 +28,11 @@ public class GameManager : MonoBehaviour
     [Header("Level Manager")]
     [SerializeField] private LevelManager _levelmanager;
 
+    [Header("UI Move and Time")]
+    [SerializeField] private GameObject _gameUI;
+    [SerializeField] private TextMeshProUGUI _moveText;
+    [SerializeField] private TextMeshProUGUI _timerText;
+    [SerializeField] private TextMeshProUGUI _levelText;
     //GameMode
     private GameMode _gameMode;
 
@@ -43,12 +48,13 @@ public class GameManager : MonoBehaviour
     //LevelData
     public int Moves;
     public float TimeSpent;
+    private int _level;
 
     //States
     public bool IsCountdownStarted = false;
     public bool IsGamePaused = true;
     public bool IsPlayerControllable = true;
-    
+    public bool IsGameStarted = false;
 
     public static GameManager Instance;
     private void Awake()
@@ -90,40 +96,71 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        if(IsCountdownStarted && _gameMode != GameMode.FTUE)
+        StartCountdown();
+        StartTimer();
+        ZenModePopUp();
+    }
+
+    private void SetGameCountdown()
+    {
+        _countdown = _countdownTimer;
+        IsCountdownStarted = true;
+    }
+
+    private void StartCountdown()
+    {
+        if (IsCountdownStarted && _gameMode != GameMode.FTUE)
         {
             _countdown -= Time.deltaTime;
-            if(_countdown <= 0f)
+            if (_countdown <= 0f)
             {
                 IsCountdownStarted = false;
                 Debug.Log("GAME STARTING");
                 DiskSpawnManager.Instance.SpawnDisks(_spawnSize);
                 UnPauseGame();
-            }
-        }
-
-        if(_spawnCountText.isActiveAndEnabled)
-        {
-            bool isNumber = int.TryParse(_spawnCountText.text, out int spawnCount);
-            if(spawnCount < _minSpawnSize|| !isNumber)
-            {
-                _spawnCountText.text = _minSpawnSize.ToString();
-            }
-            else if (spawnCount > _maxSpawnSize)
-            {
-                _spawnCountText.text = _maxSpawnSize.ToString();
+                SetGameCounters();
+                SetGameTimer();
+                SetLevelText();
             }
         }
     }
 
-    private void ResetGame()
+    private void StartTimer()
     {
-        Debug.Log("Reset");
-        _mainMenuUI.SetActive(true);
-        _successUI.SetActive(false);
-        _errorPrompt.gameObject.SetActive(false);
+        if (IsGameStarted && !IsGamePaused && IsPlayerControllable)
+        {
+            TimeSpent += Time.deltaTime;
+            SetMoveText();
+            SetTimerText();
+        }
+    }
 
-        PauseGame();
+    private void SetGameCounters()
+    {
+        _gameUI.SetActive(true);
+    }
+
+    private void SetGameTimer()
+    {
+        TimeSpent = 0;
+        IsGameStarted = true;
+    }
+
+    private void SetTimerText()
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(TimeSpent);
+        string formattedTime = string.Format("{0:mm\\:ss}", timeSpan);
+        _timerText.text = $"Time: {formattedTime}";
+    }
+
+    private void SetMoveText()
+    {
+        _moveText.text = $"Moves: {Moves}";
+    }
+
+    private void SetLevelText()
+    {
+        _levelText.text = $"Level {_level}";
     }
 
     private void InitGameStart()
@@ -148,6 +185,7 @@ public class GameManager : MonoBehaviour
                 //if last level was 6 (current level is last level) set to 6 + min spawn size = 9
                 _spawnSize = _levelmanager.GetLastLevel() + _minSpawnSize;
                 _spawnSize = _spawnSize > _maxSpawnSize ? _maxSpawnSize : _spawnSize;
+                _level = _levelmanager.GetLastLevel() + 1;
                 SetGameCountdown();
                 break;
             }
@@ -158,6 +196,27 @@ public class GameManager : MonoBehaviour
                 break;
             }
             default: break;
+        }
+    }
+
+    private void ZenModePopUp()
+    {
+        if(_gameMode != GameMode.ZenMode)
+        {
+            return;
+        }
+
+        if (_spawnCountText.isActiveAndEnabled)
+        {
+            bool isNumber = int.TryParse(_spawnCountText.text, out int spawnCount);
+            if (spawnCount < _minSpawnSize || !isNumber)
+            {
+                _spawnCountText.text = _minSpawnSize.ToString();
+            }
+            else if (spawnCount > _maxSpawnSize)
+            {
+                _spawnCountText.text = _maxSpawnSize.ToString();
+            }
         }
     }
 
@@ -185,12 +244,6 @@ public class GameManager : MonoBehaviour
 
         FTUEManager.Instance.ClearPlayerPrefs();
         FTUEManager.Instance.ControlsTutorialStart();
-    }
-
-    private void SetGameCountdown()
-    {
-        _countdown = _countdownTimer;
-        IsCountdownStarted = true;
     }
 
     public void StartGame()
@@ -240,11 +293,33 @@ public class GameManager : MonoBehaviour
         }
         else if (_gameMode == GameMode.Standard)
         {
-            TimeSpent = 0;
+            GameOver();
             _levelmanager.SetLevelClearData(Moves, TimeSpent);
             ReturnToMainMenu();
             GoToNextLevel();
         }
+    }
+
+    private void GameOver()
+    {
+        IsGameStarted = false;
+        _gameUI.SetActive(false);
+    }
+
+    public void GameOverCallback()
+    {
+        //add the call back on the finished baking popup
+    }
+
+    private void ResetGame()
+    {
+        Debug.Log("Reset");
+        _gameUI.SetActive(false);
+        _mainMenuUI.SetActive(true);
+        _successUI.SetActive(false);
+        _errorPrompt.gameObject.SetActive(false);
+
+        PauseGame();
     }
 
     public void ReturnToMainMenu()
@@ -255,7 +330,8 @@ public class GameManager : MonoBehaviour
 
     public void GoToNextLevel()
     {
-        if(_levelmanager.GetLastLevel() < (_maxSpawnSize - _minSpawnSize))
+        var maximumLevel = _maxSpawnSize - _minSpawnSize - 1;
+        if(_levelmanager.GetLastLevel() < maximumLevel)
         {
             Debug.Log($"Can go to next level: Next level is{ _levelmanager.GetLastLevel()+1}");
         }
