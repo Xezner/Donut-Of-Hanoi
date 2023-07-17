@@ -148,6 +148,15 @@ public class FTUEManager : MonoBehaviour
         BuildSceneManager.Instance.LoadSceneAsync(BuildScene.MainMenuScene);
     }
 
+    public void SkipTutorial()
+    {
+        UnpauseAndUpdateFTUE(FTUE.MovementTutorial);
+        UnpauseAndUpdateFTUE(FTUE.InteractTutorial);
+        UnpauseAndUpdateFTUE(FTUE.PickUpTutorial);
+        UnpauseAndUpdateFTUE(FTUE.PlaceTutorial);
+        PauseAndStartTutorial(_finishedTutorial);
+    }
+
     public void SetBool(FTUE ftue, bool value)
     {
         string key = ftue.ToString();
