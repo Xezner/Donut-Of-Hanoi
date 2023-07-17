@@ -336,6 +336,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void UpdateZenModeSpawnCountText(int addValue)
+    {
+        int.TryParse(_spawnCountText.text, out int spawnCount);
+        spawnCount += addValue;
+        spawnCount = spawnCount < _minSpawnSize ? _minSpawnSize : spawnCount;
+        spawnCount = spawnCount > _maxSpawnSize ? _maxSpawnSize : spawnCount;
+        _spawnCountText.text = spawnCount.ToString();
+    }
+
     public void InitZenModeStart()
     {
         _zenModePopUp.SetActive(true);
