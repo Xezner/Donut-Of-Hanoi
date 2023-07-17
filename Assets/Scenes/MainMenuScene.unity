@@ -685,6 +685,11 @@ PrefabInstance:
       objectReference: {fileID: 1832597010}
     - target: {fileID: 6542306650144410571, guid: da3758ad16eba7647b0721f09f8f0c29,
         type: 3}
+      propertyPath: m_text
+      value: Select Number of Donuts
+      objectReference: {fileID: 0}
+    - target: {fileID: 6542306650144410571, guid: da3758ad16eba7647b0721f09f8f0c29,
+        type: 3}
       propertyPath: m_RaycastTarget
       value: 0
       objectReference: {fileID: 0}
